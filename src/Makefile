@@ -1,7 +1,7 @@
 CC	 	= gcc
 CLINKER	= gcc
 
-OBJS	= main.o
+OBJS	= main.o ip.o
 
 .SUFFIXES:	.o .c
 .c.o:

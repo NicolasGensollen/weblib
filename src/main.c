@@ -6,6 +6,8 @@
 #include <string.h>
 #include <signal.h>
 
+#include "ip.h"
+
 #define MSG_SIZE 14
 
 /* Callback when daemon is killed. */
@@ -65,6 +67,9 @@ int main ()
 
 		// Callback on SIGTERM
 		signal(SIGTERM, sighandler);
+
+		// Flush FILTER
+		flush();
 
 		// Open a log file in write mode
 		fp = fopen("Log.txt", "w+");
