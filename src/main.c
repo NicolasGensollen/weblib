@@ -88,14 +88,17 @@ int main ()
 			fprintf(fp, "Listening...\n");
 			fflush(fp);
 		
-			char msg[MSG_SIZE];
+			char ip[MSG_SIZE];
 			int read_value;
-			read_value = read(mypipe[0], msg, MSG_SIZE);
+			read_value = read(mypipe[0], ip, MSG_SIZE);
 		
 			if (read_value > 0)
 			{
-				fprintf(fp, "Message received = %s\n", msg);
-				fflush(fp);         
+				fprintf(fp, "IP received = %s\n", ip);
+				char* new_rule = forge_ip_authorization(ip);
+				fprintf(fp, "New rule : %s\n", new_rule);
+				fflush(fp);
+				apply_rule(new_rule);      
 			}
 		
 		}
