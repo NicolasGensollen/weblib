@@ -16,7 +16,17 @@ void sighandler(int signum)
 {
 	FILE *fp = NULL;
 	fp = fopen("Log.txt", "a");
-	fprintf(fp, "Caught signal %d, killing daemon...\n", signum);    
+	fprintf(fp, "Caught signal %d, killing daemon...\n", signum);   
+
+	// Save rules to file
+	apply_rule("sudo iptables-save > iptables.rules");
+	fprintf(fp, "Saving rules to config file iptables.rules...\n");
+
+	// Flush and lock port 22
+	flush();
+	disable_all_ip();
+	fprintf(fp, "Locking all IPs before dying.\n");
+ 
 	fclose(fp);
 	exit(1);
 }
@@ -80,6 +90,10 @@ int main ()
 
 		// Port 22 (SSH) is blocked
 		disable_all_ip();
+
+		// Load previously saved config
+		apply_rule("sudo iptables-restore < ./iptables.rules");
+		fprintf(fp, "Load previous config from file iptables.rules...\n");
             
 		while (1)
 		{
