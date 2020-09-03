@@ -39,7 +39,7 @@ char* forge_ip_authorization(char* ip)
 
     char* rule = malloc( sizeof(char) * (IP_RULE_MAX_SIZE+1));
     char* begin = "sudo iptables -t filter --src";
-    char* end = "-A INPUT -p TCP --dport 22 -j ACCEPT";
+    char* end = "-I INPUT 1 -p TCP --dport 22 -j ACCEPT";
     snprintf(rule, IP_RULE_MAX_SIZE+1, "%s %s %s", begin, ip, end);
     return rule;
 }
