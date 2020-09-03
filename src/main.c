@@ -68,12 +68,18 @@ int main ()
 		// Callback on SIGTERM
 		signal(SIGTERM, sighandler);
 
-		// Flush FILTER
-		flush();
-
 		// Open a log file in write mode
 		fp = fopen("Log.txt", "w+");
 		fprintf(fp, "Deamon started!\n");
+
+		// Initially block all IPs
+		fprintf(fp, "Block all IPs.\n");
+		
+		// Flush FILTER
+		flush();
+
+		// Port 22 (SSH) is blocked
+		disable_all_ip();
             
 		while (1)
 		{

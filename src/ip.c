@@ -23,3 +23,12 @@ void flush()
     char* rule = "sudo iptables -t filter -F INPUT";
     apply_rule(rule);
 }
+
+/* Disable all IP on port 22 (SSH) */
+
+void disable_all_ip()
+{
+    char* rule = "sudo iptables -t filter -A INPUT -p tcp --dport 22 -j DROP";
+    apply_rule(rule);
+}
+
