@@ -8,7 +8,7 @@
 
 #include "ip.h"
 
-#define MSG_SIZE 14
+#define MSG_SIZE 13
 
 /* Callback when daemon is killed. */
 
@@ -115,15 +115,19 @@ int main ()
 		close (mypipe[0]);
 		printf("Process_id of child process %d \n", pid);
 
-		char* msg1 = "Hello, World!"; 
-		printf("Sending to daemon : %s\n", msg1);
-		write(mypipe[1], msg1, MSG_SIZE);
+		char* ip1 = "192.168.1.18"; 
+		char* new_rule = forge_ip_authorization(ip1);
+                printf("New rule : %s\n", new_rule);
+		printf("Sending to daemon : %s\n", ip1);
+		write(mypipe[1], ip1, MSG_SIZE);
 
 		sleep(5);
 
-		char* msg2 = "Good bye !!!!"; 
-		printf("Sending to daemon : %s\n", msg2);
-		write(mypipe[1], msg2, MSG_SIZE);
+		char* ip2 = "192.168.1.20"; 
+		char* new_rule2 = forge_ip_authorization(ip2);
+                printf("New rule : %s\n", new_rule2);
+		printf("Sending to daemon : %s\n", ip2);
+		write(mypipe[1], ip2, MSG_SIZE);
 	    
 		close(mypipe[1]);
 		printf("Done!\n");
