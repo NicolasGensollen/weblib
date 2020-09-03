@@ -6,7 +6,9 @@
 #include <string.h>
 #include <signal.h>
 
-#define MSG_SIZE 14
+#include "ip.h"
+
+#define MSG_SIZE 13
 
 /* Callback when daemon is killed. */
 
@@ -69,6 +71,15 @@ int main ()
 		// Open a log file in write mode
 		fp = fopen("Log.txt", "w+");
 		fprintf(fp, "Deamon started!\n");
+
+		// Initially block all IPs
+		fprintf(fp, "Block all IPs.\n");
+		
+		// Flush FILTER
+		flush();
+
+		// Port 22 (SSH) is blocked
+		disable_all_ip();
             
 		while (1)
 		{
@@ -77,14 +88,17 @@ int main ()
 			fprintf(fp, "Listening...\n");
 			fflush(fp);
 		
-			char msg[MSG_SIZE];
+			char ip[MSG_SIZE];
 			int read_value;
-			read_value = read(mypipe[0], msg, MSG_SIZE);
+			read_value = read(mypipe[0], ip, MSG_SIZE);
 		
 			if (read_value > 0)
 			{
-				fprintf(fp, "Message received = %s\n", msg);
-				fflush(fp);         
+				fprintf(fp, "IP received = %s\n", ip);
+				char* new_rule = forge_ip_authorization(ip);
+				fprintf(fp, "New rule : %s\n", new_rule);
+				fflush(fp);
+				apply_rule(new_rule);      
 			}
 		
 		}
@@ -104,15 +118,19 @@ int main ()
 		close (mypipe[0]);
 		printf("Process_id of child process %d \n", pid);
 
-		char* msg1 = "Hello, World!"; 
-		printf("Sending to daemon : %s\n", msg1);
-		write(mypipe[1], msg1, MSG_SIZE);
+		char* ip1 = "192.168.1.18"; 
+		char* new_rule = forge_ip_authorization(ip1);
+                printf("New rule : %s\n", new_rule);
+		printf("Sending to daemon : %s\n", ip1);
+		write(mypipe[1], ip1, MSG_SIZE);
 
 		sleep(5);
 
-		char* msg2 = "Good bye !!!!"; 
-		printf("Sending to daemon : %s\n", msg2);
-		write(mypipe[1], msg2, MSG_SIZE);
+		char* ip2 = "192.168.1.20"; 
+		char* new_rule2 = forge_ip_authorization(ip2);
+                printf("New rule : %s\n", new_rule2);
+		printf("Sending to daemon : %s\n", ip2);
+		write(mypipe[1], ip2, MSG_SIZE);
 	    
 		close(mypipe[1]);
 		printf("Done!\n");
