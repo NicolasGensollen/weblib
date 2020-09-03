@@ -4,8 +4,20 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <signal.h>
 
 #define MSG_SIZE 14
+
+/* Callback when daemon is killed. */
+
+void sighandler(int signum)
+{
+	FILE *fp = NULL;
+	fp = fopen("Log.txt", "a");
+	fprintf(fp, "Caught signal %d, killing daemon...\n", signum);    
+	fclose(fp);
+	exit(1);
+}
 
 int main ()
 {
@@ -51,6 +63,9 @@ int main ()
 		close(STDOUT_FILENO);
 		close(STDERR_FILENO);
 
+		// Callback on SIGTERM
+		signal(SIGTERM, sighandler);
+
 		// Open a log file in write mode
 		fp = fopen("Log.txt", "w+");
 		fprintf(fp, "Deamon started!\n");
@@ -66,28 +81,10 @@ int main ()
 			int read_value;
 			read_value = read(mypipe[0], msg, MSG_SIZE);
 		
-			switch(read_value)
+			if (read_value > 0)
 			{
-			
-				case -1:
-
-					fprintf(fp, "Pipe is empty\n");
-					fflush(fp); 
-					sleep(1);
-					break;
-
-				case 0:
-
-					fprintf(fp, "End of conversation\n");
-					fflush(fp); 
-					fclose(fp);
-					close(mypipe[0]);
-					return EXIT_SUCCESS;
-
-				default:
-
-					fprintf(fp, "Message received = %s\n", msg);
-					fflush(fp);         
+				fprintf(fp, "Message received = %s\n", msg);
+				fflush(fp);         
 			}
 		
 		}
